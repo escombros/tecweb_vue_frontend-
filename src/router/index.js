@@ -24,6 +24,12 @@ const routes = [
   {
     path: '/about',
     name: 'about',
+    component: () => import('@/views/about/main-index'),
+    hidden: true
+  },
+  {
+    path: '/prueba',
+    name: 'h',
     component: () => import('@/views/user/main-index'),
     meta: { requiresAuth: true }
   }

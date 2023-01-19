@@ -10,9 +10,13 @@
         <img class="logo-mex"  src="@/assets/images/logo.svg" alt="Logo">
       </el-button>
     </el-col>
-    <el-col :span="5" :offset="0" >
+    <el-col :span="7" :offset="0" >
+      <el-link class="texto-link" href="https://www.gob.mx/gobierno" target="_blank" >Ayuda</el-link>
+      &nbsp;
+      <el-link class="texto-link" href="https://www.gob.mx/gobierno" target="_blank">Contacto</el-link>
+      &nbsp;
       <el-dropdown >
-        <span class="texto-config">
+        <span class="texto-config el-link">
           Trámites
           <el-icon class="el-icon--right">
           </el-icon>
@@ -60,7 +64,7 @@
     <el-row class="margin-bottom-2" type="flex" wstyle="width: 100% height: 50%" >
     <el-col :span="7" :offset="2">
     <strong>
-      <el-card class="box-card">
+      <el-card >
         <div class="text item">
           <el-form
             status-icon
@@ -78,7 +82,7 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button class="butonclass" type="danger" @click.stop.prevent="gotoRegister()" plain>Buscar</el-button>
+              <el-button class="butonclass" type="danger" @click.stop.prevent="pruebahoy()" plain>Buscar</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -86,6 +90,7 @@
     </strong>
   </el-col>
 </el-row>
+<br><br>
 <footer class="footer">
   <div class="container px-4 px-lg-5"><p class="textfooter"><br>ESCOM &copy; FUD</p></div>
 </footer>
@@ -130,14 +135,14 @@ export default{
                     if(response.data.success == false){
                         this.$message({
                             showClose: false,
-                            message: 'No se pudo encontrar su registro',
+                            message: response.data.messages[0],
                             type: 'error'
                           })
                     }else {
                         this.$message({
                         type: 'success',
                         showClose: false,
-                        message: 'Registro Encontrado',
+                        message: response.data.messages[0],
                       })
                       axios.defaults.headers.common['Authorization']=response.data.data['token_type'] + " " + response.data.data['access_token'];
                       localStorage.setItem('token',response.data.data['access_token'])
@@ -147,11 +152,11 @@ export default{
                 )
             }
     },
+    async pruebahoy(){
+      this.$router.push('about')
+    },
     async gotoRegister(){
       this.$router.push('register')
-    },
-    async pruebaruta(){
-      this.$router.push('about')
     },
     async registrarFUD(){
       await axios.post('/user/login',this.consulta).then(response =>{
@@ -272,8 +277,19 @@ body{
   font-size: 1.1rem;
   color:white;
 }
-.el-link {
-  color: hotpink;
+.el-link{
+  color:#00adc4;
+}
+
+.el-link:hover {
+  color:#00adc4;
+}
+.el-link:visited {
+  color:#00adc4;
+}
+
+.el-link:active {
+  color:#00adc4;
 }
 .el-icon-s-home {
   font-size: 1.5rem;
@@ -336,9 +352,12 @@ body{
 .el-card {
   border-width: thin;
   border-color: #0C231E ;
-  background-color: #b8bebe ;
+  background-color: #f0f0f0;
+
 }
 footer{
+  flex: 0 0 auto;
+
   background-color: #0f312a;
    align-items: flex-end;
    height: 120px;
@@ -358,5 +377,9 @@ footer{
 
 .butonclass{
   border: 1px solid rgb(248, 60, 35);
+}
+
+.box-card{
+  width: 500px;
 }
 </style>

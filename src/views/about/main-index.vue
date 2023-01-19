@@ -11,13 +11,13 @@
        </el-button>
      </el-col>
      <el-col :span="7" :offset="0" >
-      <el-link class="texto-link" href="https://www.gob.mx/gobierno" target="_blank" >Ayuda</el-link>
+      <el-link class="texto-link" href="https://www.gob.mx/gobierno" >Ayuda</el-link>
       &nbsp;
-      <el-link class="texto-link" href="https://www.gob.mx/gobierno" target="_blank">Contacto</el-link>
+      <el-link class="texto-link" href="https://www.gob.mx/gobierno" >Contacto</el-link>
       &nbsp;
        <el-dropdown >
          <span class="texto-config el-link">
-           Trámites
+           Trámites ABOUT
            <el-icon class="el-icon--right">
          
            </el-icon>
@@ -32,9 +32,9 @@
            </el-dropdown-menu>
          </template>
        </el-dropdown>
-       <el-link class="texto-link" href="https://www.gob.mx/gobierno" target="_blank">Gobierno</el-link>
+       <el-link class="texto-link" href="https://www.gob.mx/gobierno" >Gobierno</el-link>
        &nbsp;
-       <el-link icon="el-icon-search" href="https://www.webfud.escomproyectos.com/" target="_blank"></el-link> 
+       <el-link icon="el-icon-search" href="https://www.webfud.escomproyectos.com/"></el-link> 
      </el-col>
    </el-row>
  </div>
@@ -55,64 +55,12 @@
 </div>
 <div>
 <br><br>
-<el-row class="margin-bottom-2"  >
-    
-  <el-col :span="9" :offset="3">
-    <br>
-      <h1 class="h1">
-       INICIA TU DENUNCIA<br>
-      </h1>
-     <p>
-      Llena el formulario debajo para iniciar <br>
-      con tu pre-registro del Formato<br>
-      Único de Declaracion (FUD) y dar seguimiento <br>
-      a tu denuncia.
-    </p>
-    <br>
-  </el-col>
-</el-row>
-
- <el-row class="margin-bottom-2" type="flex" wstyle="width: 100% height: 50%" >
-<el-col :span="8" :offset="3">
-<strong>
-    <el-card class="box-cardregister">
-      <div class="text item">
-        <el-form
-          status-icon
-          label-width="120px"
-          class="demo-ruleForm"
-        >
-          <el-form-item label="CURP" prop="pass">
-            <el-input class="elinput" v-model="registro.id" autocomplete="off" autocapitalize="words" />
-          </el-form-item>
-
-          <el-form-item label="CORREO"  autocomplete="off">
-            <el-input class="elinput" v-model="registro.email" autocomplete="off"/>
-          </el-form-item>
-
-          <el-form-item class="correoinput" label="CONFIRMA TU CORREO"  autocomplete="off">
-            <el-input class="elinput" v-model="confirmationemail"  autocomplete="off"/>
-          </el-form-item>
-
-
-          <el-form-item class="botonform">
-            <el-button class="butonclass" type="danger" @click.stop.prevent="registrarUsuario()" plain>Registrar</el-button><br>
-            <el-link class="linkexception" href="https://www.gob.mx/curp/" >¿No tienes CURP? click aquí</el-link><br>
-            <el-link class="link2exception" href="https://www.gob.mx/gobierno" >¿No tienes Correo electrónico? click aquí</el-link>
-
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
-  </strong>
-  <br><br>
-  </el-col>
-</el-row> 
+     
       
 
-<footer class="footer">
-  <div class="container px-4 px-lg-5"><p class="textfooter"><br>ESCOM &copy; FUD</p></div>
-</footer>
+    <footer class="footer">
+      <div class="container px-4 px-lg-5"><p class="textfooter"><br>ESCOM &copy; FUD</p></div>
+  </footer>
 </div>
 
  </template>
@@ -124,10 +72,13 @@ export default{
     return {
       llave: 'valor',
       pagename: "FUD",
-      confirmationemail: '',
+      consulta: {
+        id: '',
+        folio: ''
+      },
       registro: {
-        email: '',
-        id: ''
+        curp: '',
+        correo: ''
       }
     }
   },
@@ -140,51 +91,71 @@ export default{
     async ruta(){
       this.$router.push({ name: 'about'})
     },
-    async registrarUsuario(){
-      if(this.registro.email=='' || this.registro.id==''){
+    async consultarFUD(){
+      if(this.consulta.id=='' || this.consulta.folio==''){
             this.$message({
                 showClose: false,
-                message: 'Ingrese su CURP y Correo para iniciar con su registro',
+                message: 'Ingrese su ID y Folio para buscar su registro',
                 type: 'error'
               })
           } else{
-                if(this.confirmationemail != this.registro.email) {
-                  this.$message({
-                    showClose: false,
-                    message: 'Su Correo py su confirmación de Correo no coinciden',
-                    type: 'error'
-                  })
-                } else {
-                    await axios.post('/user/register',this.registro).then(response =>{
-                      if(response.data.success == false){
-                          this.$message({
-                              showClose: false,
-                              message:response.data.messages[0],
-                              type: 'error'
-                            })
-                      }else {
-                          this.$message({
-                          type: 'success',
-                          showClose: false,
-                          message: response.data.messages[0],
-                        })
-                        axios.defaults.headers.common['Authorization']=response.data.data['token_type'] + " " + response.data.data['access_token'];
-                        localStorage.setItem('token',response.data.data['access_token'])
-                        this.$router.push('about');
-                      }
+                await axios.post('/user/login',this.consulta).then(response =>{
+                    if(response.data.success == false){
+                        this.$message({
+                            showClose: false,
+                            message: 'No se pudo encontrar su registro',
+                            type: 'error'
+                          })
+                    }else {
+                        this.$message({
+                        type: 'success',
+                        showClose: false,
+                        message: 'Registro Encontrado',
+                      })
+                      axios.defaults.headers.common['Authorization']=response.data.data['token_type'] + " " + response.data.data['access_token'];
+                      localStorage.setItem('token',response.data.data['access_token'])
+                      this.$router.push('about');
                     }
-                  )
-                }
-                
+                  }
+                )
             }
     },
     async pruebaruta(){
       this.$router.push('about')
+    },
+    async registrarFUD(){
+      await axios.post('/user/login',this.consulta).then(response =>{
+          console.log(response);
+          if(this.consulta.id=='' || this.consulta.folio==''){
+            this.$message({
+                showClose: false,
+                message: 'Ingrese su Curp y Correo para buscar su registro',
+                type: 'error'
+              })
+          } else{
+
+            if(response.data.success == false){
+              this.$message({
+                  showClose: false,
+                  message: 'No se pudo encontrar su registro',
+                  type: 'error'
+                })
+            }else {
+              this.$message({
+              type: 'success',
+              showClose: false,
+              message: 'Registro Encontrado',
+            })
+            }
+          }
+        }
+      )
     }
   }
 
 }
 </script>
+<style>
 <style>
    
    .h1{
@@ -287,6 +258,9 @@ export default{
      font-size: 1.1rem;
      color:white;
    }
+   .el-link {
+     color: hotpink;
+   }
    .el-icon-s-home {
      font-size: 1.5rem;
      color:rgb(66, 66, 66);
@@ -354,6 +328,10 @@ export default{
     width: 650px;
     height: 350px;
   }
+  .box-card{
+    width: 400px;
+  }
+
   .textolink{
     font-size: 1.1rem;
   }
@@ -390,72 +368,6 @@ export default{
     offset: 20px;
   }
 
-  .correoinput{
-    align-items: center;
-
-  }
-
-  .box-cardregisster{
-    width: 500px;
-  }
-
-  .botonform{
-    margin-left: 60px;
-    display: inline-block;
-    align-self: center;
-    align-items: center;
-    align-content: center;
-  }
-
-  .linkexception{
-    margin-left: -60px;
-    color: #0C231E;
-  }
-
-  .linkexception:active{
-    margin-left: -60px;
-    color: #0C231E;
-  }
-
-
-  .linkexception:hover{
-    margin-left: -60px;
-    color: #0C231E;
-  }
-
-
-  .linkexception:visited{
-    margin-left: -60px;
-    color: #0C231E;
-  }
-
-  
-  
-
-
-
-
-  .link2exception{
-    margin-left: -100px;
-    color: #0C231E;
-  }
-
-  .link2exception:active{
-    margin-left: -100px;
-    color: #0C231E;
-  }
-
-
-  .link2exception:hover{
-    margin-left: -100px;
-    color: #0C231E;
-  }
-
-
-  .link2exception:visited{
-    margin-left: -100px;
-    color: #0C231E;
-  }
 
    </style>
    
